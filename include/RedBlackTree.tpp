@@ -38,8 +38,55 @@ void RedBlackTree<T>::insert(T value) {
 }
 
 template<typename T>
-void RedBlackTree<T>::recolor() {
-    //TODO
+void RedBlackTree<T>::recolor(Node<T> *node) {
+    // Case 1 (red uncle)
+    if (node->uncleColor() == Color::RED) {
+        case1(&node);
+    } else { // Uncle = Black
+        case2(&node);
+        case3(&node);
+    }
+}
+
+template<typename T>
+void RedBlackTree<T>::case1(Node<T> *node) {
+    // Red Uncle Case
+    node->parent->color = Color::BLACK;
+    node->uncle()->color = Color::BLACK;
+    node->parent->parent->color = Color::RED;
+}
+
+template<typename T>
+void RedBlackTree<T>::case2(Node<T> *node) {
+    // Uncle Black
+
+    // Left Triangle (>)
+    if (node->parent->left == node && node->parent->parent->right == node->parent) {
+        rotateRight(node->parent);
+    }
+    // Right Triangle (<)
+    if (node->parent->right == node && node->parent->parent->left == node->parent) {
+        rotateLeft(node->parent);
+    }
+}
+
+template<typename T>
+void RedBlackTree<T>::case3(Node<T> *node) {
+    // Uncle Black
+
+    // Left Line (\)
+    if (node->parent->right == node && node->parent->parent->right == node->parent) {
+        node->parent->color = Color::BLACK;
+        node->parent->parent->color = Color::RED;
+        rotateLeft(node->parent->parent);
+    }
+    // Right Line (/)
+    if (node->parent->left == node && node->parent->parent->left == node->parent) {
+        node->parent->color = Color::BLACK;
+        node->parent->parent->color = Color::RED;
+        rotateRight(node->parent->parent);
+    }
+
 }
 
 template<typename T>

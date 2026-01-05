@@ -9,7 +9,12 @@ private:
     void rotateLeft(Node<T> *node);
     void rotateRight(Node<T> *node);
 
-    void recolor();
+    void recolor(Node<T> *node);
+    void case1(Node<T> *node);
+    void case2(Node<T> *node);
+    void case3(Node<T> *node);
+
+    void displayTree(Node<T> *node = nullptr);
 public:
     RedBlackTree();
     void insert(T value);

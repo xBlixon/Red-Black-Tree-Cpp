@@ -16,6 +16,14 @@ Node<T> *Node<T>::uncle() {
     return nullptr;
 }
 
+template<typename T>
+Color Node<T>::uncleColor() {
+    if (this->uncle() == nullptr) {
+        return Color::BLACK;
+    }
+    return this->uncle()->color;
+}
+
 template<>
 inline unsigned int Node<char>::score() {
     return value;

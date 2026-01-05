@@ -15,6 +15,7 @@ public:
 
     unsigned int score();
     Node<T> *uncle();
+    Color uncleColor();
 };
 
 #include "Node.tpp"
