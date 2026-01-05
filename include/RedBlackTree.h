@@ -14,10 +14,11 @@ private:
     void case2(Node<T> *node);
     void case3(Node<T> *node);
 
-    void displayTree(Node<T> *node = nullptr);
 public:
     RedBlackTree();
     void insert(T value);
+
+    void displayTree(Node<T> *node = nullptr);
 };
 
 #include "RedBlackTree.tpp"
