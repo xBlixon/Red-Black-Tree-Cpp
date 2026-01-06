@@ -17,9 +17,13 @@ private:
 
     void connectLeft(Node<T> *parent, Node<T> *node);
     void connectRight(Node<T> *parent, Node<T> *node);
+
+    void transplant(Node<T> *u, Node<T> *v);
 public:
     RedBlackTree();
     void insert(T value);
+    Node<T>* find(T value);
+    void remove(T value);
 
     void displayTree();
 };

@@ -226,3 +226,56 @@ void RedBlackTree<T>::connectRight(Node<T> *parent, Node<T> *node) {
     parent->right = node;
     node->parent = parent;
 }
+
+template<typename T>
+void RedBlackTree<T>::transplant(Node<T> *u, Node<T> *v) {
+    if (u == root) {
+        root = v;
+    } else if (u->parent->left == u) {
+        u->parent->left = v;
+    } else {
+        u->parent->right = v;
+    }
+    v->parent = u->parent;
+}
+
+template<typename T>
+void RedBlackTree<T>::remove(T value) {
+    //TODO
+}
+
+template<>
+inline Node<int> *RedBlackTree<int>::find(const int value) {
+    Node<int> *current = root;
+    while (current) {
+        if (current->value == value) {
+            return current;
+        }
+
+        if (current->value < value) {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+    return nullptr;
+}
+
+//Identical for int and char
+
+template<>
+inline Node<char> *RedBlackTree<char>::find(const char value) {
+    Node<char> *current = root;
+    while (current) {
+        if (current->value == value) {
+            return current;
+        }
+
+        if (current->value < value) {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+    return nullptr;
+}
