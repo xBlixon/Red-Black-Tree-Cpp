@@ -279,3 +279,21 @@ inline Node<char> *RedBlackTree<char>::find(const char value) {
     }
     return nullptr;
 }
+
+template<typename T>
+Node<T> *RedBlackTree<T>::findMin() {
+    Node<T> *current = root;
+    while (current->left) {
+        current = current->left;
+    }
+    return current;
+}
+
+template<typename T>
+Node<T> *RedBlackTree<T>::findMax() {
+    Node<T> *current = root;
+    while (current->right) {
+        current = current->right;
+    }
+    return current;
+}

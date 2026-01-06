@@ -23,6 +23,8 @@ public:
     RedBlackTree();
     void insert(T value);
     Node<T>* find(T value);
+    Node<T>* findMin();
+    Node<T>* findMax();
     void remove(T value);
 
     void displayTree();
