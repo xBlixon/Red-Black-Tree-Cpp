@@ -75,12 +75,13 @@ void RedBlackTree<T>::case1(Node<T> *node) {
 template<typename T>
 void RedBlackTree<T>::case2(Node<T> *node) {
     // Uncle Black
+    auto grandparent = node->grandparent();
 
     // Left Triangle (>)
     if (node->parent &&
         node->parent->left == node &&
-        node->grandparent() &&
-        node->parent->parent->right == node->parent) {
+        grandparent &&
+        grandparent->right == node->parent) {
 
         rotateRight(node->parent);
         case3(node->right);
@@ -88,8 +89,8 @@ void RedBlackTree<T>::case2(Node<T> *node) {
     // Right Triangle (<)
     if (node->parent &&
         node->parent->right == node &&
-        node->grandparent() &&
-        node->parent->parent->left == node->parent) {
+        grandparent &&
+        grandparent->left == node->parent) {
 
         rotateLeft(node->parent);
         case3(node->left);
@@ -108,8 +109,8 @@ void RedBlackTree<T>::case3(Node<T> *node) {
         grandparent->right == node->parent) {
 
         node->parent->color = Color::BLACK;
-        node->parent->parent->color = Color::RED;
-        rotateLeft(node->parent->parent);
+        grandparent->color = Color::RED;
+        rotateLeft(grandparent);
         case0();
     }
     // Right Line (/)
@@ -131,26 +132,21 @@ void RedBlackTree<T>::rotateLeft(Node<T> *node) {
     Node<T> *parent = node->parent;
     Node<T> *rightNode = node->right;
 
-    if (rightNode != nullptr) {
-        rightNode->parent = parent;
-        if (parent != nullptr) {
-            if (parent->left == node) {
-                parent->left = rightNode;
-            } else {
-                parent->right = rightNode;
-            }
+    if (parent) {
+        if (parent->left == node) {
+            connectLeft(parent, rightNode);
+        } else {
+            connectRight(parent, rightNode);
         }
-
-        node->parent = rightNode;
-        node->right = rightNode->left;
-        rightNode->left = node;
-
-        if (node == root) {
-            root = rightNode;
-        }
-
     } else {
-        throw R"(Unable to rotate left over nullptr.)";
+        rightNode->parent = nullptr;
+    }
+
+    node->right = rightNode->left;
+    connectLeft(rightNode, node);
+
+    if (node == root) {
+        root = rightNode;
     }
 
 }
@@ -160,25 +156,21 @@ void RedBlackTree<T>::rotateRight(Node<T> *node) {
     Node<T> *parent = node->parent;
     Node<T> *leftNode = node->left;
 
-    if (leftNode != nullptr) {
-        leftNode->parent = parent;
-        if (parent != nullptr) {
-            if (parent->left == node) {
-                parent->left = leftNode;
-            } else {
-                parent->right = leftNode;
-            }
-        }
-
-        node->parent = leftNode;
-        node->left = leftNode->right;
-        leftNode->right = node;
-
-        if (node == root) {
-            root = leftNode;
+    if (parent) {
+        if (parent->left == node) {
+            connectLeft(parent, leftNode);
+        } else {
+            connectRight(parent, leftNode);
         }
     } else {
-        throw R"(Unable to rotate right over nullptr.)";
+        leftNode->parent = nullptr;
+    }
+
+    node->left = leftNode->right;
+    connectRight(leftNode, node);
+
+    if (node == root) {
+        root = leftNode;
     }
 
 }
@@ -221,4 +213,16 @@ void RedBlackTree<T>::displayTree() {
         whichQueue = !whichQueue;
     }
     std::cout<<"----\n";
+}
+
+template<typename T>
+void RedBlackTree<T>::connectLeft(Node<T> *parent, Node<T> *node) {
+    parent->left = node;
+    node->parent = parent;
+}
+
+template<typename T>
+void RedBlackTree<T>::connectRight(Node<T> *parent, Node<T> *node) {
+    parent->right = node;
+    node->parent = parent;
 }
