@@ -16,6 +16,7 @@ public:
     unsigned int score();
     Node<T> *grandparent();
     Node<T> *uncle();
+    Node<T> *sibling();
     Color uncleColor();
 };
 
