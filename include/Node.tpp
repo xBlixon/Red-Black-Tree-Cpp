@@ -2,15 +2,21 @@ template<typename T>
 Node<T>::Node(T value) : value(value) {}
 
 template<typename T>
-Node<T> *Node<T>::uncle() {
-    Node<T> *nodeParent = this->parent;
-    if (nodeParent != nullptr && nodeParent->parent != nullptr) {
-        Node<T> *nodeGrandparent = nodeParent->parent;
+Node<T> *Node<T>::grandparent() {
+    if (this->parent) {
+        return this->parent->parent;
+    }
+    return nullptr;
+}
 
-        if (nodeGrandparent->left == nodeParent ) {
-            return nodeGrandparent->right;
+template<typename T>
+Node<T> *Node<T>::uncle() {
+    Node<T> *grandparent = this->grandparent();
+    if (grandparent) {
+        if (grandparent->left == this->parent ) {
+            return grandparent->right;
         } else {
-            return nodeGrandparent->left;
+            return grandparent->left;
         }
     }
     return nullptr;

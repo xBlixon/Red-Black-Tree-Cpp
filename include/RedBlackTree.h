@@ -10,6 +10,7 @@ private:
     void rotateRight(Node<T> *node);
 
     void recolor(Node<T> *node);
+    void case0();
     void case1(Node<T> *node);
     void case2(Node<T> *node);
     void case3(Node<T> *node);
@@ -18,7 +19,7 @@ public:
     RedBlackTree();
     void insert(T value);
 
-    void displayTree(Node<T> *node = nullptr);
+    void displayTree();
 };
 
 #include "RedBlackTree.tpp"

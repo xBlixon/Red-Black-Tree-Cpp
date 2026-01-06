@@ -1,12 +1,14 @@
 #pragma once
-#include <exception>
+#include <iostream>
+#include "stdlib.h"
+#include <queue>
 
 template<typename T>
 RedBlackTree<T>::RedBlackTree() {}
 
 template<typename T>
 void RedBlackTree<T>::insert(T value) {
-    Node<T> node = new Node<T>(value);
+    auto *node = new Node<T>(value);
     // Inserted node is the very first one.
     if (root == nullptr) {
         root = node;
@@ -16,7 +18,7 @@ void RedBlackTree<T>::insert(T value) {
 
     Node<T> *parent = root;
     while (true) {
-        if (node.score() < parent->score()) {
+        if (node->score() < parent->score()) {
            if (parent->left == nullptr) {
                parent->left = node;
                break;
@@ -34,17 +36,30 @@ void RedBlackTree<T>::insert(T value) {
         }
     }
 
-    recolor();
+    node->parent = parent;
+    recolor(node);
 }
 
 template<typename T>
 void RedBlackTree<T>::recolor(Node<T> *node) {
     // Case 1 (red uncle)
-    if (node->uncleColor() == Color::RED) {
-        case1(&node);
-    } else { // Uncle = Black
-        case2(&node);
-        case3(&node);
+    if (node->parent &&
+        node->parent->color == Color::RED) { // Violation
+
+        if (node->uncleColor() == Color::RED) {
+            case1(node);
+        } else { // Uncle = Black
+            case2(node);
+            case3(node);
+        }
+    }
+
+}
+
+template<typename T>
+void RedBlackTree<T>::case0() {
+    if (root->color == Color::RED) {
+        root->color = Color::BLACK;
     }
 }
 
@@ -53,7 +68,8 @@ void RedBlackTree<T>::case1(Node<T> *node) {
     // Red Uncle Case
     node->parent->color = Color::BLACK;
     node->uncle()->color = Color::BLACK;
-    node->parent->parent->color = Color::RED;
+    node->grandparent()->color = Color::RED;
+    case0();
 }
 
 template<typename T>
@@ -61,30 +77,53 @@ void RedBlackTree<T>::case2(Node<T> *node) {
     // Uncle Black
 
     // Left Triangle (>)
-    if (node->parent->left == node && node->parent->parent->right == node->parent) {
+    if (node->parent &&
+        node->parent->left == node &&
+        node->grandparent() &&
+        node->parent->parent->right == node->parent) {
+
         rotateRight(node->parent);
+        case0();
+        case3(node->right);
     }
     // Right Triangle (<)
-    if (node->parent->right == node && node->parent->parent->left == node->parent) {
+    if (node->parent &&
+        node->parent->right == node &&
+        node->grandparent() &&
+        node->parent->parent->left == node->parent) {
+
         rotateLeft(node->parent);
+        case0();
+        case3(node->left);
     }
 }
 
 template<typename T>
 void RedBlackTree<T>::case3(Node<T> *node) {
     // Uncle Black
+    auto grandparent = node->grandparent();
 
     // Left Line (\)
-    if (node->parent->right == node && node->parent->parent->right == node->parent) {
+    if (node->parent &&
+        node->parent->right == node &&
+        grandparent &&
+        grandparent->right == node->parent) {
+
         node->parent->color = Color::BLACK;
         node->parent->parent->color = Color::RED;
         rotateLeft(node->parent->parent);
+        case0();
     }
     // Right Line (/)
-    if (node->parent->left == node && node->parent->parent->left == node->parent) {
+    if (node->parent &&
+        node->parent->left == node &&
+        grandparent &&
+        grandparent->left == node->parent) {
+
         node->parent->color = Color::BLACK;
-        node->parent->parent->color = Color::RED;
-        rotateRight(node->parent->parent);
+        grandparent->color = Color::RED;
+        rotateRight(grandparent);
+        case0();
     }
 
 }
@@ -96,15 +135,21 @@ void RedBlackTree<T>::rotateLeft(Node<T> *node) {
 
     if (rightNode != nullptr) {
         rightNode->parent = parent;
-        if (parent->left == node) {
-            parent->left = rightNode;
-        } else {
-            parent->right = rightNode;
+        if (parent != nullptr) {
+            if (parent->left == node) {
+                parent->left = rightNode;
+            } else {
+                parent->right = rightNode;
+            }
         }
 
         node->parent = rightNode;
         node->right = rightNode->left;
         rightNode->left = node;
+
+        if (node == root) {
+            root = rightNode;
+        }
 
     } else {
         throw R"(Unable to rotate left over nullptr.)";
@@ -119,18 +164,63 @@ void RedBlackTree<T>::rotateRight(Node<T> *node) {
 
     if (leftNode != nullptr) {
         leftNode->parent = parent;
-        if (parent->left == node) {
-            parent->left = leftNode;
-        } else {
-            parent->right = leftNode;
+        if (parent != nullptr) {
+            if (parent->left == node) {
+                parent->left = leftNode;
+            } else {
+                parent->right = leftNode;
+            }
         }
 
         node->parent = leftNode;
         node->left = leftNode->right;
         leftNode->right = node;
 
+        if (node == root) {
+            root = leftNode;
+        }
     } else {
         throw R"(Unable to rotate right over nullptr.)";
     }
 
+}
+
+template<typename T>
+void RedBlackTree<T>::displayTree() {
+    system("");
+    std::queue<Node<T>*> Q1;
+    std::queue<Node<T>*> Q2;
+    bool whichQueue = true;
+    char level = '0';
+    Q1.push(root);
+    bool wasLevelNumberPrinted = false;
+    while (!Q1.empty() || !Q2.empty()) {
+        if (!wasLevelNumberPrinted) {
+            std::cout<<"["<<level<<"] ";
+            wasLevelNumberPrinted = true;
+        }
+        auto que = whichQueue ? &Q1 : &Q2;
+        auto otherQue = whichQueue ? &Q2 : &Q1;
+        auto current = que->front();
+        if (current->left != nullptr) {
+            otherQue->push(current->left);
+        }
+        if (current->right != nullptr) {
+            otherQue->push(current->right);
+        }
+        if (current->color == Color::RED) {
+            std::cout << "\033[91m" << current->value << "\033[0m" << " ";
+        } else {
+            std::cout << "\033[90m" << current->value << "\033[0m" << " ";
+        }
+        que->pop();
+        if (!que->empty()) {
+            continue;
+        }
+        std::cout<<"\n";
+        wasLevelNumberPrinted = false;
+        level++;
+        whichQueue = !whichQueue;
+    }
+    std::cout<<"----\n";
 }
