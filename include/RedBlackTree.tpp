@@ -83,7 +83,6 @@ void RedBlackTree<T>::case2(Node<T> *node) {
         node->parent->parent->right == node->parent) {
 
         rotateRight(node->parent);
-        case0();
         case3(node->right);
     }
     // Right Triangle (<)
@@ -93,7 +92,6 @@ void RedBlackTree<T>::case2(Node<T> *node) {
         node->parent->parent->left == node->parent) {
 
         rotateLeft(node->parent);
-        case0();
         case3(node->left);
     }
 }
