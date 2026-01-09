@@ -38,6 +38,7 @@ void RedBlackTree<T>::insert(T value) {
 
     node->parent = parent;
     recolor(node);
+    insertCase0();
 }
 
 template<typename T>
@@ -47,33 +48,34 @@ void RedBlackTree<T>::recolor(Node<T> *node) {
         node->parent->color == Color::RED) { // Violation
 
         if (node->uncleColor() == Color::RED) {
-            case1(node);
+            insertCase1(node);
         } else { // Uncle = Black
-            case2(node);
-            case3(node);
+            insertCase2(node);
+            insertCase3(node);
         }
     }
 
 }
 
 template<typename T>
-void RedBlackTree<T>::case0() {
+void RedBlackTree<T>::insertCase0() {
     if (root->color == Color::RED) {
         root->color = Color::BLACK;
     }
 }
 
 template<typename T>
-void RedBlackTree<T>::case1(Node<T> *node) {
+void RedBlackTree<T>::insertCase1(Node<T> *node) {
+    auto grandparent = node->grandparent();
     // Red Uncle Case
     node->parent->color = Color::BLACK;
     node->uncle()->color = Color::BLACK;
-    node->grandparent()->color = Color::RED;
-    case0();
+    grandparent->color = Color::RED;
+    recolor(grandparent);
 }
 
 template<typename T>
-void RedBlackTree<T>::case2(Node<T> *node) {
+void RedBlackTree<T>::insertCase2(Node<T> *node) {
     // Uncle Black
     auto grandparent = node->grandparent();
 
@@ -84,7 +86,7 @@ void RedBlackTree<T>::case2(Node<T> *node) {
         grandparent->right == node->parent) {
 
         rotateRight(node->parent);
-        case3(node->right);
+        insertCase3(node->right);
     }
     // Right Triangle (<)
     if (node->parent &&
@@ -93,12 +95,12 @@ void RedBlackTree<T>::case2(Node<T> *node) {
         grandparent->left == node->parent) {
 
         rotateLeft(node->parent);
-        case3(node->left);
+        insertCase3(node->left);
     }
 }
 
 template<typename T>
-void RedBlackTree<T>::case3(Node<T> *node) {
+void RedBlackTree<T>::insertCase3(Node<T> *node) {
     // Uncle Black
     auto grandparent = node->grandparent();
 
@@ -111,7 +113,7 @@ void RedBlackTree<T>::case3(Node<T> *node) {
         node->parent->color = Color::BLACK;
         grandparent->color = Color::RED;
         rotateLeft(grandparent);
-        case0();
+        insertCase0();
     }
     // Right Line (/)
     if (node->parent &&
@@ -122,7 +124,7 @@ void RedBlackTree<T>::case3(Node<T> *node) {
         node->parent->color = Color::BLACK;
         grandparent->color = Color::RED;
         rotateRight(grandparent);
-        case0();
+        insertCase0();
     }
 
 }
@@ -177,6 +179,10 @@ void RedBlackTree<T>::rotateRight(Node<T> *node) {
 
 template<typename T>
 void RedBlackTree<T>::displayTree() {
+    if (!root) {
+        std::cout << "\033[91mEMPTY TREE!\033[0m\n";
+        return;
+    }
     system("");
     std::queue<Node<T>*> Q1;
     std::queue<Node<T>*> Q2;
@@ -236,12 +242,166 @@ void RedBlackTree<T>::transplant(Node<T> *u, Node<T> *v) {
     } else {
         u->parent->right = v;
     }
-    v->parent = u->parent;
+    if (v) {
+        v->parent = u->parent;
+    }
 }
 
 template<typename T>
 void RedBlackTree<T>::remove(T value) {
-    //TODO
+    auto node = find(value);
+    if (!node) {
+        return;
+    }
+
+    removeNode(node);
+}
+
+template<typename T>
+void RedBlackTree<T>::removeNode(Node<T> *node) {
+    if (node == root && !node->hasChildren()) {
+        root = nullptr;
+        delete node;
+        return;
+    }
+
+
+    if (node->isLeaf()) {
+        if (node->color == Color::RED) {
+            node->detachFromParent();
+            delete node;
+            return;
+        }
+
+        // Node is black
+        doubleBlackFix(node);
+        node->detachFromParent();
+        delete node;
+        return;
+    }
+
+    if (auto child = node->hasOnlyOneChild()) {
+        if (node->isLeftChild()) {
+            connectLeft(node->parent, child);
+        } else {
+            connectRight(node->parent, child);
+        }
+        delete node;
+    }
+
+    if (node->hasTwoChildren()) {
+        auto replacement = findMin(node->right);
+        while (replacement->left || replacement->right) {
+            if (replacement->left) {
+                replacement = replacement->left;
+            } else if (replacement->right) {
+                replacement = replacement->right;
+            }
+        }
+        node->value = replacement->value;
+        removeNode(replacement);
+    }
+}
+
+template<typename T>
+void RedBlackTree<T>::doubleBlackFix(Node<T> *doubleBlack) {
+    if (doubleBlack == root) {
+        return;
+    }
+
+    auto sibling = doubleBlack->sibling();
+    if (doubleBlack->parent->color == Color::RED) {
+        // Case 1
+        if (sibling->color == Color::BLACK &&
+            sibling->leftChildColor() == Color::BLACK &&
+            sibling->rightChildColor() == Color::BLACK) {
+
+            removeCase1(doubleBlack);
+            return;
+        }
+    }
+    // Parent is Black
+    // Case 3
+    if (sibling->color == Color::RED) {
+        removeCase3(doubleBlack);
+        return;
+    }
+    // Parent and Sibling are Black
+    // Case 4
+    if (sibling->leftChildColor() == Color::BLACK &&
+        sibling->rightChildColor() == Color::BLACK) {
+        removeCase4(doubleBlack);
+
+        return;
+    }
+
+    // Case 5 (becomes case 6)
+    if (doubleBlack->closeNephew()->color == Color::RED) {
+        removeCase5(doubleBlack);
+        return;
+    }
+
+    // Far nephew must be Red
+    // Case 6
+    removeCase6(doubleBlack);
+
+}
+
+template<typename T>
+void RedBlackTree<T>::removeCase1(Node<T> *db) {
+    db->parent->color = Color::BLACK;
+    db->sibling()->color = Color::RED;
+}
+
+template<typename T>
+void RedBlackTree<T>::removeCase2(Node<T> *db) {
+    db->sibling()->color = Color::RED;
+    // doubleBlackFix(db);
+}
+
+template<typename T>
+void RedBlackTree<T>::removeCase3(Node<T> *db) {
+    db->sibling()->color = Color::BLACK;
+    db->parent->color = Color::RED;
+    if (db->isLeftChild()) {
+        rotateLeft(db->parent);
+    } else {
+        rotateRight(db->parent);
+    }
+    removeCase1(db);
+}
+
+template<typename T>
+void RedBlackTree<T>::removeCase4(Node<T> *db) {
+    db->sibling()->color = Color::RED;
+    doubleBlackFix(db->parent);
+}
+
+
+template<typename T>
+void RedBlackTree<T>::removeCase5(Node<T> *db) {
+    db->closeNephew()->color = Color::BLACK;
+    db->sibling()->color = Color::RED;
+    if (db->isLeftChild()) {
+        rotateRight(db->sibling());
+    } else {
+        rotateLeft(db->sibling());
+    }
+    removeCase6(db);
+}
+
+
+template<typename T>
+void RedBlackTree<T>::removeCase6(Node<T> *db) {
+    db->sibling()->color = db->parent->color;
+    db->parent->color = Color::BLACK;
+    db->distantNephew()->color = Color::BLACK;
+
+    if (db->isLeftChild()) {
+        rotateLeft(db->parent);
+    } else {
+        rotateRight(db->parent);
+    }
 }
 
 template<>
@@ -252,7 +412,7 @@ inline Node<int> *RedBlackTree<int>::find(const int value) {
             return current;
         }
 
-        if (current->value < value) {
+        if (value < current->value) {
             current = current->left;
         } else {
             current = current->right;
@@ -281,8 +441,8 @@ inline Node<char> *RedBlackTree<char>::find(const char value) {
 }
 
 template<typename T>
-Node<T> *RedBlackTree<T>::findMin() {
-    Node<T> *current = root;
+Node<T> *RedBlackTree<T>::findMin(Node<T> *node) {
+    Node<T> *current = node ? node : root;
     while (current->left) {
         current = current->left;
     }
@@ -290,10 +450,26 @@ Node<T> *RedBlackTree<T>::findMin() {
 }
 
 template<typename T>
-Node<T> *RedBlackTree<T>::findMax() {
-    Node<T> *current = root;
+Node<T> *RedBlackTree<T>::findMax(Node<T> *node) {
+    Node<T> *current = node ? node : root;
     while (current->right) {
         current = current->right;
     }
     return current;
+}
+
+template<typename T>
+void RedBlackTree<T>::colorBlack(Node<T> *node) {
+    if (!node) {
+        return;
+    }
+    node->color = Color::BLACK;
+}
+
+template<typename T>
+void RedBlackTree<T>::colorRed(Node<T> *node) {
+    if (!node) {
+        return;
+    }
+    node->color = Color::RED;
 }

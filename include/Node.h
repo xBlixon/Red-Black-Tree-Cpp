@@ -17,6 +17,18 @@ public:
     Node<T> *grandparent();
     Node<T> *uncle();
     Node<T> *sibling();
+    Node<T> *closeNephew();
+    Node<T> *distantNephew();
+    Node<T> *hasOnlyOneChild();
+    bool isLeftChild();
+    bool isRightChild();
+    bool hasChildren();
+    bool hasTwoChildren();
+    bool isLeaf();
+    Color leftChildColor();
+    Color rightChildColor();
+    bool hasRedChild();
+    void detachFromParent();
     Color uncleColor();
 };
 
