@@ -150,6 +150,11 @@ bool Node<T>::hasRedChild() {
     return rightChildColor() == Color::RED || leftChildColor() == Color::RED;
 }
 
+template<typename T>
+inline unsigned int Node<T>::score() {
+    return value.score();
+}
+
 template<>
 inline unsigned int Node<char>::score() {
     return value;
