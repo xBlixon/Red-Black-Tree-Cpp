@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(RedBlackTreeLibrary INTERFACE)
 
 target_sources(RedBlackTreeLibrary
-        PRIVATE
+        INTERFACE
             include/RedBlackTree.tpp
             include/Node.tpp
         PUBLIC
