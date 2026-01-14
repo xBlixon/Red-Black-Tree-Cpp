@@ -404,6 +404,24 @@ void RedBlackTree<T>::removeCase6(Node<T> *db) {
     }
 }
 
+template<typename T>
+inline Node<T> *RedBlackTree<T>::find(const T value) {
+    Node<T> *current = root;
+    unsigned int searchedScore = value.score();
+    while (current) {
+        if (current->value.score() == searchedScore) {
+            return current;
+        }
+
+        if (searchedScore < current->value.score()) {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+    return nullptr;
+}
+
 template<>
 inline Node<int> *RedBlackTree<int>::find(const int value) {
     Node<int> *current = root;
