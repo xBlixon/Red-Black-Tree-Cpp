@@ -1,5 +1,6 @@
 #ifndef RBT
 #define RBT
+#include "Node.h"
 
 template <typename T>
 class RedBlackTree {
