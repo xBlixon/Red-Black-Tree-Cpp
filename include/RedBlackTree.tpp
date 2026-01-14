@@ -491,3 +491,8 @@ void RedBlackTree<T>::colorRed(Node<T> *node) {
     }
     node->color = Color::RED;
 }
+
+template<typename T>
+Node<T> *RedBlackTree<T>::_getRoot() {
+    return root;
+}

@@ -38,7 +38,7 @@ public:
     Node<T>* findMin(Node<T> *node = nullptr);
     Node<T>* findMax(Node<T> *node = nullptr);
     void remove(T value);
-
+    Node<T>* _getRoot();
     void displayTree();
 };
 
