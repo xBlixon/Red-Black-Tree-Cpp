@@ -18,6 +18,7 @@ int main() {
     tree.remove(17);
     tree.displayTree();
     std::cout<< "text\n";
+    tree.erase(tree.begin());
     for (auto v: tree) { // Iterators work
         std::cout << v << std::endl;
     }

@@ -1,10 +1,15 @@
 #ifndef REDBLACKTREE_ITERATOR_H
 #define REDBLACKTREE_ITERATOR_H
 #include "Node.h"
+#include "RedBlackTree.h"
+
+template <typename T>
+class RedBlackTree;
 
 template <typename T>
 class Iterator {
 private:
+    friend class RedBlackTree<T>;
     Node<T> *_root;
     Node<T> *ptr;
     void moveNext();

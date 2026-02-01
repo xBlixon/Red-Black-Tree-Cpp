@@ -44,6 +44,7 @@ public:
 
     Iterator<T> begin();
     Iterator<T> end();
+    void erase(Iterator<T> it);
 };
 
 #include "RedBlackTree.tpp"

@@ -509,3 +509,10 @@ template<typename T>
 Iterator<T> RedBlackTree<T>::end() {
     return Iterator<T>(nullptr, root);
 }
+
+template<typename T>
+void RedBlackTree<T>::erase(Iterator<T> it) {
+    if (it.ptr) {
+        removeNode(it.ptr);
+    }
+}
