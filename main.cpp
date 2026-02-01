@@ -1,6 +1,4 @@
-#include "Node.h"
 #include "include/RedBlackTree.h"
-#include "include/Color.h"
 
 int main() {
     RedBlackTree<int> tree;

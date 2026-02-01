@@ -1,3 +1,5 @@
+#pragma once
+
 template<typename T>
 Iterator<T>::Iterator(Node<T> *pointer, Node<T> *root) : ptr(pointer), _root(root) {}
 
