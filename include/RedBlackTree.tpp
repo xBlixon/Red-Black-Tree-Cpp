@@ -259,10 +259,16 @@ void RedBlackTree<T>::remove(T value) {
 
 template<typename T>
 void RedBlackTree<T>::removeNode(Node<T> *node) {
-    if (node == root && !node->hasChildren()) {
-        root = nullptr;
-        delete node;
-        return;
+    if (node == root ) {
+        if (auto child = node->hasOnlyOneChild()) {
+            root = child;
+            delete node;
+            return;
+        } else if (!child) {
+            root = nullptr;
+            delete node;
+            return;
+        }
     }
 
 
