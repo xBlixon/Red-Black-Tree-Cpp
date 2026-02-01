@@ -281,6 +281,7 @@ void RedBlackTree<T>::removeNode(Node<T> *node) {
     }
 
     if (auto child = node->hasOnlyOneChild()) {
+        child->color = Color::BLACK;
         if (node->isLeftChild()) {
             connectLeft(node->parent, child);
         } else {
@@ -298,7 +299,10 @@ void RedBlackTree<T>::removeNode(Node<T> *node) {
                 replacement = replacement->right;
             }
         }
-        node->value = replacement->value;
+        // Replacing contents of the memory address with
+        // the replacement value
+        node->value.~T();
+        new (&node->value) T(replacement->value);
         removeNode(replacement);
     }
 }

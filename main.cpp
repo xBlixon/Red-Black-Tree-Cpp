@@ -22,5 +22,7 @@ int main() {
     for (auto v: tree) { // Iterators work
         std::cout << v << std::endl;
     }
+    tree.remove(12);
+    tree.displayTree();
     return 0;
 }
