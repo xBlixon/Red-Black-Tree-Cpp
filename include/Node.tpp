@@ -3,7 +3,7 @@ Node<T>::Node(T value) : value(value) {}
 
 template<typename T>
 bool Node<T>::isLeftChild() {
-    if (parent->left == this) {
+    if (parent && parent->left == this) {
         return true;
     }
     return false;
