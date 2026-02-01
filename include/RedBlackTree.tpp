@@ -496,3 +496,16 @@ template<typename T>
 Node<T> *RedBlackTree<T>::_getRoot() {
     return root;
 }
+
+template<typename T>
+Iterator<T> RedBlackTree<T>::begin() {
+    if (root != nullptr) {
+        return Iterator<T>(findMin(root), root);
+    }
+    return Iterator<T>(nullptr, nullptr);
+}
+
+template<typename T>
+Iterator<T> RedBlackTree<T>::end() {
+    return Iterator<T>(nullptr, root);
+}

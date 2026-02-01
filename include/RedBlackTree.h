@@ -1,5 +1,6 @@
 #ifndef RBT
 #define RBT
+#include "Iterator.h"
 #include "Node.h"
 
 template <typename T>
@@ -40,6 +41,9 @@ public:
     void remove(T value);
     Node<T>* _getRoot();
     void displayTree();
+
+    Iterator<T> begin();
+    Iterator<T> end();
 };
 
 #include "RedBlackTree.tpp"

@@ -20,5 +20,8 @@ int main() {
     tree.remove(17);
     tree.displayTree();
     std::cout<< "text\n";
+    for (auto v: tree) { // Iterators work
+        std::cout << v << std::endl;
+    }
     return 0;
 }

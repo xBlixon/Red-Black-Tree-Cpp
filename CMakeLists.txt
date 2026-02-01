@@ -11,6 +11,7 @@ target_sources(RedBlackTreeLibrary
         INTERFACE
             include/RedBlackTree.tpp
             include/Node.tpp
+            include/Iterator.tpp
         PUBLIC
             FILE_SET HEADERS
             BASE_DIRS
@@ -19,6 +20,7 @@ target_sources(RedBlackTreeLibrary
                 include/RedBlackTree.h
                 include/Node.h
                 include/Color.h
+                include/Iterator.h
 )
 
 add_executable(exec main.cpp)
