@@ -265,7 +265,9 @@ void RedBlackTree<T>::removeNode(Node<T> *node) {
             child->parent = nullptr;
             delete node;
             return;
-        } else if (!child) {
+        }
+
+        if (!node->hasTwoChildren()) {
             root = nullptr;
             delete node;
             return;
