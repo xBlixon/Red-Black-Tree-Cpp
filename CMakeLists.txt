@@ -3,7 +3,9 @@ project(RedBlackTree)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(RedBlackTreeLibrary INTERFACE)
+add_library(RedBlackTreeLibrary INTERFACE
+        include/Iterator.tpp
+        include/Iterator.h)
 
 target_sources(RedBlackTreeLibrary
         INTERFACE
@@ -19,9 +21,9 @@ target_sources(RedBlackTreeLibrary
                 include/Color.h
 )
 
-add_executable(RBT main.cpp)
+add_executable(exec main.cpp)
 
-target_link_libraries(RBT
+target_link_libraries(exec
         PRIVATE
             RedBlackTreeLibrary
 )
